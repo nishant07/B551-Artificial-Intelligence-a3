@@ -27,6 +27,15 @@
 from ZacateState import Dice
 from ZacateState import Scorecard
 import random
+import itertools
+def generate_unique_states():
+	unique_combinations = itertools.combinations_with_replacement("123456",5)
+	lst = []
+	for i in unique_combinations:
+		permutations = itertools.permutations(i,5)
+		for i in permutations:
+			lst.append(i)
+	unique_states = list(set(lst))
 
 class ZacateAutoPlayer:
 
@@ -46,15 +55,20 @@ class ZacateAutoPlayer:
       def third_roll(self, dice, scorecard):
       	available_categories = list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) 
             # stupidly just randomly choose a category to put this in
-        choice = best_category(dice,available_categories)
-        return choice
+        choice = self.best_category(dice,available_categories) 
+        print choice[0]
+        print choice[1]
+        return choice[0]
         #return random.choice( list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) )
       def best_category(self, dice, available_categories):
 
 #Categories = [ "unos", "doses", "treses", "cuatros", "cincos", "seises", "pupusa de queso", "pupusa de frijol", "elote", "triple", "cuadruple", "quintupulo", "tamal" ]      	
       	max_category = dict()
+      	print dice
+      	print dice.dice
+      	counts = [dice.dice.count(i) for i in range(1,7)]
       	for category in available_categories:
-      		if category == "unos":
+            if category == "unos":
       			max_category[category] = counts[Scorecard.Numbers[category]-1] * 1
             if category == "doses":
             	max_category[category] = counts[Scorecard.Numbers[category]-1] * 2
@@ -66,24 +80,22 @@ class ZacateAutoPlayer:
             	max_category[category] = counts[Scorecard.Numbers[category]-1] * 5
             if category == "seises":
             	max_category[category] = counts[Scorecard.Numbers[category]-1] * 6 
-        	if category == "pupusa de queso":
-            	max_category[category] = 40 if sorted(dice) == [1,2,3,4,5] or sorted(dice) == [2,3,4,5,6] else 0
-        	if category == "pupusa de frijol":
-            	max_category[category] = 30 if (len(set([1,2,3,4]) - set(dice)) == 0 or len(set([2,3,4,5]) - set(dice)) == 0 or len(set([3,4,5,6]) - set(dice)) == 0) else 0
-        	if category == "elote":
+            if category == "pupusa de queso":
+            	max_category[category] = 40 if sorted(dice.dice) == [1,2,3,4,5] or sorted(dice.dice) == [2,3,4,5,6] else 0
+            if category == "pupusa de frijol":
+            	max_category[category] = 30 if (len(set([1,2,3,4]) - set(dice.dice)) == 0 or len(set([2,3,4,5]) - set(dice.dice)) == 0 or len(set([3,4,5,6]) - set(dice.dice)) == 0) else 0
+            if category == "elote":
             	max_category[category] = 25 if (2 in counts) and (3 in counts) else 0
-        	if category == "triple":
-            	max_category[category] = sum(dice) if max(counts) >= 3 else 0
-        	if category == "cuadruple":
-            	max_category[category] = sum(dice) if max(counts) >= 4 else 0
-        	if category == "quintupulo":
+            if category == "triple":
+            	max_category[category] = sum(dice.dice) if max(counts) >= 3 else 0
+            if category == "cuadruple":
+            	max_category[category] = sum(dice.dice) if max(counts) >= 4 else 0
+            if category == "quintupulo":
             	max_category[category] = 50 if max(counts) == 5 else 0
-        	if category == "tamal":
-            	max_category[category] = sum(dice)
-        	else:
-            	max_category["No"] = 0
-			return max(category, key= category.get)
+            if category == "tamal":
+            	max_category[category] = sum(dice.dice)
+            else:
+            	max_category[random.choice(available_categories)] = 0
+        print max_category
+        return [max(max_category, key= max_category.get),max_category[max(max_category, key= max_category.get)]]
 
-
-
-      	

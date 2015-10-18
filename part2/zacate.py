@@ -21,7 +21,7 @@ from ZacateAutoPlayer import ZacateAutoPlayer
 #
 
 scores = []
-for i in range(0,1):
+for i in range(0, 100):
     print "\n\n***** Starting a new game of Zacate!!"
     d = Dice()
     s = Scorecard()
