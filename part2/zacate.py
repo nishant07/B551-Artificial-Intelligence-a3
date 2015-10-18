@@ -21,7 +21,7 @@ from ZacateAutoPlayer import ZacateAutoPlayer
 #
 
 scores = []
-for i in range(0, 100):
+for i in range(0,1):
     print "\n\n***** Starting a new game of Zacate!!"
     d = Dice()
     s = Scorecard()
@@ -42,7 +42,7 @@ for i in range(0, 100):
         d.reroll(which_to_reroll)
         print "   Roll #3: " + str(d)
         category = ap.third_roll(d, s)
-
+        print category
         s.record(category, d)
         print s
 
