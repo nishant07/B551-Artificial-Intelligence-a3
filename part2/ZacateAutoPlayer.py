@@ -41,10 +41,25 @@ def generate_unique_states():
 class ZacateAutoPlayer:
 
       def __init__(self):
-            pass  
+            #"unos", "doses", "treses", "cuatros", "cincos", "seises", 
+            self.category_prob = {"pupusa de queso":0.03086419753, "pupusa de frijol":0.01234567901, "elote":0.03858024691, "triple":0.55555555555, "cuadruple":0.02314814814, "quintupulo":0.00077160493}
+            self.unique_states_and_categories = self.generate_unique_states()
 
       def first_roll(self, dice, scorecard):
-      	print dice
+      	diff = {}
+      	for k,v in self.unique_states_and_categories:
+      		diff_dice = list(set(dice.dice) - set(k))
+      		diff_dice_num = -len(diff_dice)
+      		temp = {}
+      		for key,values in v:
+      			if key in self.category_prob:
+      				values = values*self.category_prob[k]
+      			values *= diff_dice_num
+      			temp[key] = values
+      		diff[k] = temp
+      	next_move = max(diff,key=diff.get)
+      	print next_move
+
       	print scorecard
         return [0] # always re-roll first die (blindly)
 
@@ -115,4 +130,4 @@ class ZacateAutoPlayer:
 			#print unique_states_and_categories[i]
 		print len(unique_states_and_categories)
 		return unique_states_and_categories
-ZacateAutoPlayer().generate_unique_states()
+print ZacateAutoPlayer().category_prob
