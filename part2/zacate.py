@@ -30,7 +30,6 @@ for i in range(0, 100):
     for i in range(1, 14):
         print "\n * Turn " + str(i)
 
-        # first roll
         d.roll()
         print "   Roll #1: " + str(d)
         which_to_reroll = ap.first_roll(d, s)
@@ -42,7 +41,6 @@ for i in range(0, 100):
         d.reroll(which_to_reroll)
         print "   Roll #3: " + str(d)
         category = ap.third_roll(d, s)
-        print category
         s.record(category, d)
         print s
 

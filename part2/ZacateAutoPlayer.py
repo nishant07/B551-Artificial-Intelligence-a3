@@ -44,37 +44,54 @@ class ZacateAutoPlayer:
             #"unos", "doses", "treses", "cuatros", "cincos", "seises", 
             self.category_prob = {"pupusa de queso":0.03086419753, "pupusa de frijol":0.01234567901, "elote":0.03858024691, "triple":0.55555555555, "cuadruple":0.02314814814, "quintupulo":0.00077160493}
             self.unique_states_and_categories = self.generate_unique_states()
+            #print self.unique_states_and_categories
 
       def first_roll(self, dice, scorecard):
       	diff = {}
-      	for k,v in self.unique_states_and_categories:
+      	for k,v in self.unique_states_and_categories.items():
       		diff_dice = list(set(dice.dice) - set(k))
       		diff_dice_num = -len(diff_dice)
       		temp = {}
-      		for key,values in v:
+      		for key,values in v.items():
       			if key in self.category_prob:
-      				values = values*self.category_prob[k]
+      				values = values*self.category_prob[key]
       			values *= diff_dice_num
       			temp[key] = values
       		diff[k] = temp
-      	next_move = max(diff,key=diff.get)
-      	print next_move
+      	next_move = min(diff,key=diff.get)
+      	act_diff = list(set(dice.dice) - set(next_move))
+      	dice_pos = []
+      	for i in act_diff:
+      		dice_pos.append(dice.dice.index(i))
 
-      	print scorecard
-        return [0] # always re-roll first die (blindly)
+        return dice_pos # always re-roll first die (blindly)
 
       def second_roll(self, dice, scorecard):
-      	print scorecard
-      	return [1, 2] # always re-roll second and third dice (blindly)
-      
-      
+      	diff = {}
+      	for k,v in self.unique_states_and_categories.items():
+      		diff_dice = list(set(dice.dice) - set(k))
+      		diff_dice_num = -len(diff_dice)
+      		temp = {}
+      		for key,values in v.items():
+      			if key in self.category_prob:
+      				values = values*self.category_prob[key]
+      			values *= diff_dice_num
+      			temp[key] = values
+      		diff[k] = temp
+      	next_move = min(diff,key=diff.get)
+      	act_diff = list(set(dice.dice) - set(next_move))
+      	dice_pos = []
+      	for i in act_diff:
+      		dice_pos.append(dice.dice.index(i))
+
+        return dice_pos     
       def third_roll(self, dice, scorecard):
       	available_categories = list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) 
             # stupidly just randomly choose a category to put this in
         dic = self.best_category(dice.dice,available_categories) 
-        print dic
+#        print dic
         print max(dic, key= dic.get)
-        print dic[max(dic, key= dic.get)]
+#        print dic[max(dic, key= dic.get)]
         return max(dic, key= dic.get)
         #return random.choice( list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) )
       def best_category(self, dice, available_categories = Scorecard.Categories):
@@ -128,6 +145,5 @@ class ZacateAutoPlayer:
 			unique_states_and_categories[i] = self.best_category(dice,categories)
 			#print i
 			#print unique_states_and_categories[i]
-		print len(unique_states_and_categories)
+#		print len(unique_states_and_categories)
 		return unique_states_and_categories
-print ZacateAutoPlayer().category_prob
