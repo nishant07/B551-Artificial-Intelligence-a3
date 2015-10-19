@@ -5,6 +5,18 @@
 # Based on skeleton code by D. Crandall
 #
 # PUT YOUR REPORT HERE!
+"""
+I am taking the cuurect roll and comparing it will all possible rolls for how different they are to achieve from current roll.
+I have assigned all possible categories and related scores to all possible rolls.
+So while comparing will current roll to all possibilities I take weightage of the diffencet between them, multiplication each categories' score and its probability of getting that category.
+I am then predict the next move from all possible rolls which has maximum values of category scores given least difference from given roll
+And I reroll the dice which are different from current roll and predicted most probable next roll.
+I am doing this for both the rolls.
+In the last roll I am taking which all cateogries are possible to achieve and returning the category which gives maximum score.
+"""
+
+
+
 #
 #
 # This is the file you should modify to create your new smart Zacate player.
