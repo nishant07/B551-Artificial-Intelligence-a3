@@ -8,7 +8,7 @@
 """
 I am taking the cuurect roll and comparing it will all possible rolls for how different they are to achieve from current roll.
 I have assigned all possible categories and related scores to all possible rolls.
-So while comparing will current roll to all possibilities I take weightage of the diffencet between them, multiplication each categories' score and its probability of getting that category.
+So while comparing with current roll to all possibilities I take weightage of the diffence between them, each categories' score and its probability of getting that category.
 I am then predict the next move from all possible rolls which has maximum values of category scores given least difference from given roll
 And I reroll the dice which are different from current roll and predicted most probable next roll.
 I am doing this for both the rolls.
@@ -40,60 +40,70 @@ from ZacateState import Dice
 from ZacateState import Scorecard
 import random
 import itertools
-"""
-def generate_unique_states():
-	unique_combinations = itertools.combinations_with_replacement("123456",5)
-	lst = []
-	for i in unique_combinations:
-		permutations = itertools.permutations(i,5)
-		for i in permutations:
-			lst.append(i)
-	unique_states = list(set(lst))
-"""
 class ZacateAutoPlayer:
 
       def __init__(self):
             #"unos", "doses", "treses", "cuatros", "cincos", "seises", 
-            self.category_prob = {"pupusa de queso":0.03086419753, "pupusa de frijol":0.01234567901, "elote":0.03858024691, "triple":0.55555555555, "cuadruple":0.02314814814, "quintupulo":0.00077160493}
-            self.unique_states_and_categories = self.generate_unique_states()
-            #print self.unique_states_and_categories
+            self.category_prob = {"pupusa de queso":0.03086419753, "pupusa de frijol":0.01234567901, "elote":0.03858024691, "triple":0.15432098765, "cuadruple":0.01929012345, "quintupulo":0.00077160493}
 
       def first_roll(self, dice, scorecard):
       	diff = {}
-      	for k,v in self.unique_states_and_categories.items():
+      	#finding best possible move which can achieve maximum score from given roll
+      	for k,v in unique_states_and_categories.items():
       		diff_dice = list(set(dice.dice) - set(k))
-      		diff_dice_num = -len(diff_dice)
+      		diff_dice_num = -1*len(diff_dice)
       		temp = {}
       		for key,values in v.items():
       			if key in self.category_prob:
       				values = values*self.category_prob[key]
       			values *= diff_dice_num
-      			temp[key] = values
-      		diff[k] = temp
-      	next_move = min(diff,key=diff.get)
-      	act_diff = list(set(dice.dice) - set(next_move))
+      			if values == 0:
+                              values = -float("inf")
+                        temp[key] = values
+      		diff[k] = max(temp.values())	
+      	next_move = max(diff,key=diff.get)
       	dice_pos = []
-      	for i in act_diff:
+      	counts = [dice.dice.count(i) for i in range(1,7)]
+      	if max(counts)>=3:
+      	    for i in counts:
+      	        if i>= 3:
+      	            num = counts.index(i)
+      	    for i in range(len(dice.dice)):
+      	        if i!=num:
+      	            dice_pos.append(i)
+        else:
+            act_diff = list(set(dice.dice) - set(next_move))
+            for i in act_diff:
       		dice_pos.append(dice.dice.index(i))
-
-        return dice_pos # always re-roll first die (blindly)
+        return dice_pos
 
       def second_roll(self, dice, scorecard):
       	diff = {}
-      	for k,v in self.unique_states_and_categories.items():
+      	for k,v in unique_states_and_categories.items():
       		diff_dice = list(set(dice.dice) - set(k))
-      		diff_dice_num = -len(diff_dice)
+      		diff_dice_num = -1*len(diff_dice)
       		temp = {}
       		for key,values in v.items():
       			if key in self.category_prob:
       				values = values*self.category_prob[key]
       			values *= diff_dice_num
-      			temp[key] = values
-      		diff[k] = temp
-      	next_move = min(diff,key=diff.get)
-      	act_diff = list(set(dice.dice) - set(next_move))
+      			if values == 0:
+                              values = -float("inf")
+                        temp[key] = values
+      		diff[k] = max(temp.values())
+      	next_move = max(diff,key=diff.get)
       	dice_pos = []
-      	for i in act_diff:
+      	counts = [dice.dice.count(i) for i in range(1,7)]
+      	if max(counts)>=3:
+      	    for i in counts:
+      	        if i>= 3:
+      	            num = counts.index(i)
+      	    for i in range(len(dice.dice)):
+      	        if i!=num:
+      	            dice_pos.append(i)
+        else:
+            act_diff = list(set(dice.dice) - set(next_move))
+            for i in act_diff:
       		dice_pos.append(dice.dice.index(i))
 
         return dice_pos     
@@ -101,11 +111,10 @@ class ZacateAutoPlayer:
       	available_categories = list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) 
             # stupidly just randomly choose a category to put this in
         dic = self.best_category(dice.dice,available_categories) 
-#        print dic
         print max(dic, key= dic.get)
-#        print dic[max(dic, key= dic.get)]
         return max(dic, key= dic.get)
-        #return random.choice( list(set(Scorecard.Categories) - set(scorecard.scorecard.keys())) )
+        
+      #Finds catetory which achieves best score from given rolls 
       def best_category(self, dice, available_categories = Scorecard.Categories):
 
 #Categories = [ "unos", "doses", "treses", "cuatros", "cincos", "seises", "pupusa de queso", "pupusa de frijol", "elote", "triple", "cuadruple", "quintupulo", "tamal" ]      	
@@ -142,6 +151,8 @@ class ZacateAutoPlayer:
             	max_category[random.choice(available_categories)] = 0
         return max_category
         #return [max(max_category, key= max_category.get),max_category[max(max_category, key= max_category.get)]]
+      
+      #To generate all unique 7736 permutation combination and assigning them dictionary having categories as keys and their score as values
       def generate_unique_states(self):
 		unique_combinations = itertools.combinations_with_replacement("123456",5)
 		categories = Scorecard.Categories
@@ -155,7 +166,6 @@ class ZacateAutoPlayer:
 		for i in unique_states:
 			dice = map(int,list(i))
 			unique_states_and_categories[i] = self.best_category(dice,categories)
-			#print i
-			#print unique_states_and_categories[i]
-#		print len(unique_states_and_categories)
 		return unique_states_and_categories
+#For one time calculation in one game
+unique_states_and_categories = ZacateAutoPlayer().generate_unique_states()
